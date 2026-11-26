@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F0E5E8">
+<meta name="description" content="十五个关于爱的小选择，测出你的宿命恋人来自哪座城：成都、上海、重庆、杭州、广州，还是大理？">
+<title>测测你的宿命恋人来自哪个城市</title>
+<style>
+/* =========================================================
+ * 古风人格测试 —— 通用样式
+ * 底色（--bg）与主色（--qing）由各测试在 index.html 中覆盖；墨色字、朱砂印、泥金线为共用
+ * ========================================================= */
+
+:root {
+  --bg: #E4EBE6;          /* 天青 */
+  --paper: #F7F6F0;       /* 素绢 */
+  --paper-2: #EEF1EC;
+  --ink: #1F2724;         /* 墨 */
+  --ink-2: #4E5A56;       /* 淡墨 */
+  --ink-3: #85918C;       /* 远山 */
+  --line: rgba(31, 39, 36, .14);
+  --line-strong: rgba(31, 39, 36, .32);
+  --qing: #24566B;        /* 石青 */
+  --zhu: #B23A2C;         /* 朱砂 */
+  --jin: #A8864A;         /* 泥金 */
+  --type: #24566B;        /* 结果页随人物类型变化 */
+  --type-soft: #DCE4EC;
+
+  --serif: "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN",
+           "Songti SC", "STSong", "SimSun", "Noto Serif CJK TC", serif;
+
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--ink);
+  background-color: var(--bg);
+  /* 绢本纹理 */
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12  0 0 0 0 .15  0 0 0 0 .14  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+button { font: inherit; color: inherit; }
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+
+:focus-visible {
+  outline: 2px solid var(--zhu);
+  outline-offset: 3px;
+}
+
+/* 远山 */
+.mountains {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 34vh;
+  max-height: 320px;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity .6s var(--ease);
+}
+body[data-screen="quiz"] .mountains,
+body[data-screen="result"] .mountains { opacity: .55; }
+
+#app { position: relative; z-index: 1; }
+
+/* ---------- 屏幕切换 ---------- */
+.screen { display: none; min-height: 100vh; min-height: 100dvh; }
+.screen.is-active { display: block; animation: screenIn .5s var(--ease) both; }
+@keyframes screenIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- 通用按钮 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 17px;
+  letter-spacing: .18em;
+  text-decoration: none;
+  transition: background-color .2s, color .2s, border-color .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: var(--qing); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  font-size: 15px;
+  letter-spacing: .08em;
+  min-height: 46px;
+  padding: 0 16px;
+}
+.btn-ghost:hover { border-color: var(--ink); background: rgba(255, 255, 255, .4); }
+.btn-text {
+  background: none;
+  color: var(--ink-2);
+  min-height: 44px;
+  font-size: 15px;
+  letter-spacing: .06em;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 6px;
+}
+.btn-text:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
+/* ---------- 印章 ---------- */
+.seal {
+  display: inline-grid;
+  place-items: center;
+  background: var(--zhu);
+  color: #FBF4EC;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px var(--zhu), inset 0 0 0 3.5px rgba(251, 244, 236, .85);
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+
+/* =========================================================
+ * 首页
+ * ========================================================= */
+.home-grid {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 64px 24px calc(140px + var(--safe-b));
+}
+.home-main { position: relative; max-width: 520px; }
+
+.home-title { margin: 0; font-weight: 400; line-height: 1.2; }
+.ht-line { display: block; }
+.ht-a, .ht-b { font-size: 30px; letter-spacing: .12em; color: var(--ink-2); font-weight: 500; }
+.ht-b { margin-top: 2px; }
+.ht-c {
+  margin-top: 10px;
+  font-size: clamp(42px, 12.4vw, 76px);
+  font-weight: 900;
+  letter-spacing: .02em;
+  line-height: 1.08;
+  color: var(--ink);
+}
+.seal-home {
+  position: absolute;
+  top: 2px; right: 0;
+  width: 58px; height: 58px;
+  font-size: 19px;
+  grid-template-rows: 1fr 1fr;
+  padding: 8px 0;
+  transform: rotate(-4deg);
+}
+.seal-home i { font-style: normal; letter-spacing: .1em; }
+
+.home-desc {
+  margin: 28px 0 0;
+  max-width: 26em;
+  font-size: 17px;
+  color: var(--ink-2);
+  padding-top: 22px;
+  border-top: 1px solid var(--jin);
+  border-image: linear-gradient(90deg, var(--jin) 0 64px, transparent 64px) 1;
+}
+
+.home-cta { margin-top: 34px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.home-cta .btn-primary { min-width: 220px; }
+
+.home-meta {
+  margin: 18px 0 0;
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+  font-size: 14px; color: var(--ink-3);
+}
+
+.type-seals {
+  list-style: none;
+  margin: 40px 0 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n, 7), minmax(0, 46px));
+  gap: 8px;
+}
+.type-seals li {
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+  border-radius: 3px;
+  color: #FBF7F0;
+  font-size: 15px;
+  line-height: 1.05;
+  letter-spacing: .05em;
+  writing-mode: vertical-rl;
+  box-shadow: inset 0 0 0 2px var(--c), inset 0 0 0 3px rgba(251, 247, 240, .7);
+  background: var(--c);
+}
+
+/* 右侧名录（桌面端） */
+.home-roll { display: none; }
+
+@media (min-width: 900px) {
+  .home-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 64px;
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 48px;
+    padding-bottom: 160px;
+  }
+  .ht-a, .ht-b { font-size: 34px; }
+  .seal-home { width: 66px; height: 66px; font-size: 21px; }
+  .home-roll {
+    display: block;
+    padding: 28px 26px;
+    background: rgba(247, 246, 240, .7);
+    border: 1px solid var(--line);
+    box-shadow: 0 0 0 6px rgba(247, 246, 240, .5), 0 0 0 7px var(--line);
+  }
+  .roll-inner {
+    display: flex;
+    flex-direction: row-reverse;   /* 自右向左，如展卷 */
+    gap: 20px;
+  }
+  .roll-col {
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    margin: 0;
+    font-size: 21px;
+    letter-spacing: .18em;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .roll-col b {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .3em;
+    color: var(--c);
+    margin-block-end: .9em;
+    padding-block: .3em;
+    border-inline-start: 2px solid var(--c);
+    padding-inline-start: 4px;
+  }
+  .roll-col i { font-style: normal; color: var(--ink-3); margin-block: .15em; }
+}
+
+/* =========================================================
+ * 答题
+ * ========================================================= */
+.quiz-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 18px 18px calc(120px + var(--safe-b));
+}
+
+.quiz-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 48px;
+}
+.btn-back {
+  justify-self: start;
+  background: none; border: 0; cursor: pointer;
+  padding: 8px 4px;
+  font-size: 15px;
+  color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-back::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-left: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  margin-right: 2px;
+}
+.btn-back:hover { color: var(--ink); }
+
+.quiz-chapter { margin: 0; font-size: 15px; letter-spacing: .2em; color: var(--ink-2); }
+.quiz-chapter b { font-weight: 700; color: var(--qing); margin-right: .6em; }
+.quiz-chapter.flash { animation: chFlash .9s var(--ease); }
+@keyframes chFlash {
+  0% { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: none; }
+}
+.quiz-count { margin: 0; justify-self: end; font-size: 14px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.quiz-count b { font-size: 20px; color: var(--ink); font-weight: 700; margin-right: 3px; }
+
+/* 进度：五卷五段 */
+.progress {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 8px 0 22px;
+}
+.pg-seg { display: flex; flex-direction: column; gap: 6px; }
+.pg-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(31, 39, 36, .1);
+  overflow: hidden;
+}
+.pg-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--qing);
+  border-radius: 2px;
+  transition: width .45s var(--ease);
+}
+.pg-seg span {
+  font-size: 12px;
+  letter-spacing: .2em;
+  color: var(--ink-3);
+  text-align: center;
+  transition: color .3s;
+}
+.pg-seg.is-current span { color: var(--qing); font-weight: 700; }
+.pg-seg.is-full .pg-bar i { background: var(--ink); }
+
+/* 题卡：仿装裱的双线框 */
+.q-card {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 26px 20px 22px;
+  box-shadow: 0 0 0 5px rgba(247, 246, 240, .6), 0 0 0 6px var(--line), 0 18px 40px -28px rgba(31, 39, 36, .45);
+}
+.q-index {
+  margin: 0 0 6px;
+  font-size: 14px;
+  letter-spacing: .3em;
+  color: var(--zhu);
+}
+.q-text {
+  margin: 0 0 22px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: .02em;
+  outline: none;
+}
+
+.q-options { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.opt {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 14px 16px;
+  min-height: 60px;
+  background: rgba(255, 255, 255, .5);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  transition: border-color .18s, background-color .18s, color .18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.opt-mark {
+  flex: none;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font-size: 14px;
+  color: var(--ink-2);
+  transition: inherit;
+}
+@media (hover: hover) {
+  .opt:hover { border-color: var(--qing); background: #fff; }
+  .opt:hover .opt-mark { border-color: var(--qing); color: var(--qing); }
+}
+.opt.is-picked { background: var(--qing); border-color: var(--qing); color: #F4F7F5; }
+.opt.is-picked .opt-mark { background: #F4F7F5; border-color: #F4F7F5; color: var(--qing); }
+.opt.just-picked { animation: pickPulse .28s var(--ease); }
+@keyframes pickPulse { 0% { transform: scale(.985); } 100% { transform: none; } }
+
+.quiz-hint { margin: 20px 0 0; text-align: center; font-size: 13px; color: var(--ink-3); }
+@media (hover: none) { .quiz-hint { display: none; } }
+
+/* 题卡切换 */
+.q-card.out-left  { animation: outLeft .2s ease-in both; }
+.q-card.out-right { animation: outRight .2s ease-in both; }
+.q-card.in-right  { animation: inRight .34s var(--ease) both; }
+.q-card.in-left   { animation: inLeft .34s var(--ease) both; }
+@keyframes outLeft  { to { opacity: 0; transform: translateX(-28px); } }
+@keyframes outRight { to { opacity: 0; transform: translateX(28px); } }
+@keyframes inRight  { from { opacity: 0; transform: translateX(28px); } }
+@keyframes inLeft   { from { opacity: 0; transform: translateX(-28px); } }
+
+@media (min-width: 640px) {
+  .quiz-wrap { padding-top: 40px; }
+  .q-card { padding: 36px 36px 30px; }
+  .q-text { font-size: 26px; }
+  .opt { font-size: 17px; padding: 16px 20px; }
+}
+
+/* =========================================================
+ * 分析中
+ * ========================================================= */
+.screen-loading.is-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 34px;
+  padding: 24px;
+}
+.ink-loader { position: relative; width: 120px; height: 120px; }
+.ink-loader i {
+  position: absolute; inset: 0;
+  margin: auto;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0;
+  animation: inkSpread 2.1s var(--ease) infinite;
+}
+.ink-loader i:nth-child(2) { animation-delay: .7s; background: var(--qing); }
+.ink-loader i:nth-child(3) { animation-delay: 1.4s; }
+@keyframes inkSpread {
+  0% { transform: scale(.2); opacity: .5; }
+  70% { opacity: .08; }
+  100% { transform: scale(5); opacity: 0; }
+}
+.loading-text { margin: 0; font-size: 18px; letter-spacing: .25em; color: var(--ink-2); min-height: 1.8em; text-align: center; }
+
+/* =========================================================
+ * 结果
+ * ========================================================= */
+.result-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 22px 14px calc(140px + var(--safe-b));
+}
+.result-card {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 26px 20px 22px;
+  box-shadow: 0 0 0 5px rgba(247, 246, 240, .7), 0 0 0 6px var(--line), 0 24px 60px -36px rgba(31, 39, 36, .5);
+  overflow: hidden;
+}
+.result-card::before {
+  /* 顶部色带：人物类型色 */
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 5px;
+  background: var(--type);
+}
+
+.rc-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+.rc-pre { margin: 4px 0 0; font-size: 14px; letter-spacing: .2em; color: var(--ink-3); }
+.rc-type {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--type);
+  letter-spacing: .12em;
+}
+.rc-type b { font-size: 22px; letter-spacing: .3em; margin-right: .3em; }
+.rc-slogan {
+  margin: 16px 0 0;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: .02em;
+  color: var(--ink);
+}
+.rc-match { margin: 18px 0 0; display: flex; align-items: baseline; gap: 10px; }
+.rc-match span { font-size: 13px; letter-spacing: .2em; color: var(--ink-3); }
+.rc-match b { font-size: 40px; font-weight: 900; line-height: 1; color: var(--type); font-variant-numeric: tabular-nums; }
+.rc-match b small { font-size: 18px; font-weight: 700; margin-left: 2px; }
+
+/* 题签：竖排人名 */
+.rc-slip {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+  padding: 14px 10px 30px;
+  background: #FFFEFA;
+  border: 1.5px solid var(--ink);
+  box-shadow: inset 0 0 0 4px #FFFEFA, inset 0 0 0 5px var(--ink);
+  min-height: 210px;
+}
+.rc-name {
+  writing-mode: vertical-rl;
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0;
+}
+.rc-style {
+  writing-mode: vertical-rl;
+  font-size: 13px;
+  letter-spacing: .25em;
+  color: var(--ink-2);
+  line-height: 1.4;
+  padding-top: 6px;
+  margin: 0;
+}
+.rc-slip.len-4 .rc-name { font-size: 40px; }
+.rc-slip.len-5 .rc-name { font-size: 33px; }
+.rc-slip.len-6 .rc-name { font-size: 28px; }
+.rc-seal {
+  position: absolute;
+  left: -14px; bottom: -14px;
+  width: 50px; height: 50px;
+  font-size: 17px;
+  writing-mode: vertical-rl;
+  letter-spacing: .06em;
+  transform: rotate(-6deg);
+}
+
+.rc-meter { margin: 22px 0 0; }
+.rc-meter p { margin: 0 0 8px; display: flex; justify-content: space-between; font-size: 14px; letter-spacing: .08em; color: var(--ink-2); }
+.rc-meter p b { margin-left: .4em; font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.rc-meter p span:first-child b { color: var(--ink-2); }
+.rc-meter p span:last-child b { color: var(--type); }
+.rm-bar { display: flex; gap: 3px; height: 10px; }
+.rm-bar i { display: block; min-width: 4px; }
+.rm-l { background: var(--type-soft); box-shadow: inset 0 0 0 1px rgba(31,39,36,.12); }
+.rm-r { background: var(--type); }
+
+.rc-facts {
+  margin: 22px 0 0;
+  display: flex; flex-wrap: wrap; gap: 6px 20px;
+  font-size: 14px; color: var(--ink-2);
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.rc-facts span b { color: var(--ink); font-weight: 700; margin-left: .4em; }
+
+.rc-tags { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.rc-tags li {
+  padding: 3px 12px;
+  font-size: 14px;
+  letter-spacing: .06em;
+  color: var(--type);
+  background: var(--type-soft);
+  border-radius: 2px;
+}
+
+.rc-radar {
+  margin: 20px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  justify-items: center;
+}
+.rc-radar svg { width: 100%; max-width: 330px; height: auto; overflow: visible; }
+.rc-radar-note { margin: 0; font-size: 14px; color: var(--ink-2); text-align: center; }
+.rc-radar-note b { color: var(--type); }
+
+.rc-sec { margin: 22px 0 0; }
+.rc-sec h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .25em;
+  color: var(--type);
+  display: flex; align-items: center; gap: 10px;
+}
+.rc-sec h3::before {
+  content: "";
+  width: 7px; height: 7px;
+  background: var(--zhu);
+  transform: rotate(45deg);
+  flex: none;
+}
+.rc-sec p { margin: 0; font-size: 16px; color: var(--ink); text-align: justify; }
+.rc-sec p + p { margin-top: 8px; }
+.rc-sec .rc-dyn { color: var(--ink-2); }
+
+.rc-egg {
+  margin: 22px 0 0;
+  padding: 16px 16px 16px 18px;
+  background: var(--paper-2);
+  border-left: 3px solid var(--jin);
+}
+.rc-egg h3 { color: var(--jin); }
+.rc-egg h3::before { background: var(--jin); }
+
+.rc-rel { margin: 22px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rc-rel > div {
+  padding: 14px 14px 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .45);
+}
+.rc-rel em {
+  display: inline-grid; place-items: center;
+  font-style: normal;
+  width: 26px; height: 26px;
+  font-size: 13px;
+  margin-right: 8px;
+  vertical-align: 2px;
+}
+.rc-rel .rel-foe em { background: var(--ink); box-shadow: inset 0 0 0 2px var(--ink), inset 0 0 0 3px rgba(251, 244, 236, .8); }
+.rc-rel strong { font-size: 18px; }
+.rc-rel p { margin: 8px 0 0; font-size: 14px; line-height: 1.7; color: var(--ink-2); }
+
+.rc-second {
+  margin: 22px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px dashed var(--line-strong);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.rc-second b { color: var(--ink); font-size: 17px; }
+
+.rc-foot {
+  margin: 22px -20px -22px;
+  padding: 14px 20px;
+  background: var(--ink);
+  color: rgba(247, 246, 240, .8);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  font-size: 13px;
+  letter-spacing: .08em;
+}
+.rc-foot b { color: var(--paper); font-weight: 500; min-width: 0; }
+.rc-foot span { white-space: nowrap; flex: none; }
+@media (max-width: 420px) { .rc-foot { font-size: 12px; letter-spacing: .02em; } }
+
+/* 揭晓：唯一一处编排动效——题签落下，印章盖上 */
+.result-card.reveal .rc-slip { animation: slipIn .7s var(--ease) .1s both; }
+.result-card.reveal .rc-seal { animation: stamp .5s cubic-bezier(.3, 1.6, .5, 1) .75s both; }
+.result-card.reveal .rc-slogan,
+.result-card.reveal .rc-match { animation: fadeUp .6s var(--ease) .45s both; }
+@keyframes slipIn { from { opacity: 0; transform: translateY(-22px); } to { opacity: 1; transform: none; } }
+@keyframes stamp { 0% { opacity: 0; transform: scale(2.2) rotate(-14deg); } 100% { opacity: 1; transform: scale(1) rotate(-6deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.result-actions {
+  margin-top: 26px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 10px;
+}
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.result-actions .btn-text { align-self: center; }
+
+@media (min-width: 640px) {
+  .result-wrap { padding-top: 48px; }
+  .result-card { padding: 38px 40px 30px; }
+  .rc-foot { margin: 28px -40px -30px; padding: 16px 40px; }
+  .rc-slogan { font-size: 25px; }
+  .rc-name { font-size: 58px; }
+  .rc-slip.len-4 .rc-name { font-size: 50px; }
+  .rc-slip.len-5 .rc-name { font-size: 42px; }
+  .rc-slip.len-6 .rc-name { font-size: 36px; }
+  .rc-slip { min-height: 250px; padding: 18px 14px 34px; }
+  .rc-match b { font-size: 48px; }
+  .rc-radar { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+ * 弹层
+ * ========================================================= */
+.modal {
+  position: fixed; inset: 0;
+  z-index: 50;
+  background: rgba(20, 26, 24, .62);
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+  animation: screenIn .25s ease both;
+}
+.modal-panel {
+  background: var(--paper);
+  border-radius: 4px;
+  width: 100%;
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.modal-poster { max-width: 440px; padding: 16px; text-align: center; }
+.modal-poster img { width: 100%; height: auto; border-radius: 2px; box-shadow: 0 0 0 1px var(--line); }
+.modal-tip { margin: 12px 0 4px; font-size: 14px; color: var(--ink-2); }
+.modal-actions { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 8px; }
+
+.modal-gallery { max-width: 640px; padding: 0 0 18px; }
+.gallery-head {
+  position: sticky; top: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 20px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  z-index: 1;
+}
+.gallery-head h2 { margin: 0; font-size: 19px; letter-spacing: .2em; }
+.gallery-body { padding: 4px 20px 0; }
+.g-group { margin-top: 18px; }
+.g-group h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  letter-spacing: .3em;
+  color: var(--c);
+  display: flex; align-items: center; gap: 8px;
+}
+.g-group h3::before { content: ""; width: 14px; height: 14px; border-radius: 2px; background: var(--c); }
+.g-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.g-item strong { font-size: 18px; line-height: 1.5; }
+.g-item strong small { display: block; font-size: 12px; font-weight: 400; color: var(--ink-3); letter-spacing: .1em; }
+.g-item p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+.g-item.is-me { background: var(--type-soft); margin: 0 -10px; padding: 10px; border-radius: 2px; }
+.g-me { display: inline-grid; place-items: center; margin-left: 6px; width: 20px; height: 20px; font-size: 12px; font-weight: 400; color: #fff; background: var(--zhu); border-radius: 2px; vertical-align: 3px; }
+
+/* ---------- 提示 ---------- */
+.toast {
+  position: fixed;
+  left: 50%; bottom: calc(28px + var(--safe-b));
+  transform: translate(-50%, 20px);
+  z-index: 60;
+  padding: 10px 20px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 3px;
+  font-size: 15px;
+  letter-spacing: .06em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s var(--ease);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.noscript { position: fixed; inset: auto 0 0; margin: 0; padding: 16px; background: var(--zhu); color: #fff; text-align: center; z-index: 99; }
+
+/* ---------- 减少动效 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+</style>
+<style>:root{--bg:#F0E5E8;--qing:#9E3A57;}</style>
+</head>
+<body>
+
+<svg class="mountains" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="mFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--qing);stop-opacity:.16"/>
+      <stop offset="1" style="stop-color:var(--qing);stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="mMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--ink);stop-opacity:.16"/>
+      <stop offset=".8" style="stop-color:var(--ink);stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="mNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color:var(--ink);stop-opacity:.22"/>
+      <stop offset="1" style="stop-color:var(--ink);stop-opacity:.02"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#mFar)" d="M0 196 C 110 168 190 112 296 146 S 470 86 566 128 S 752 52 862 116 S 1072 98 1164 138 S 1336 104 1440 146 L1440 320 L0 320 Z"/>
+  <path fill="url(#mMid)" d="M0 246 C 92 222 176 178 262 208 S 424 156 522 198 S 706 230 818 188 S 1004 146 1104 198 S 1304 232 1440 198 L1440 320 L0 320 Z"/>
+  <path fill="url(#mNear)" d="M0 292 C 156 262 262 272 382 252 S 604 282 724 264 S 982 240 1122 270 S 1342 282 1440 262 L1440 320 L0 320 Z"/>
+</svg>
+
+<main id="app">
+
+  <!-- ============ 首页 ============ -->
+  <section class="screen screen-home is-active" id="home" aria-labelledby="homeTitle">
+    <div class="home-grid">
+      <div class="home-main">
+        <h1 class="home-title" id="homeTitle">
+          <span class="ht-line ht-a">测测你的</span>
+          <span class="ht-line ht-b">宿命恋人</span>
+          <span class="ht-line ht-c">来自哪个城市</span>
+        </h1>
+        <span class="seal seal-home" aria-hidden="true"><i>十五</i><i>问</i></span>
+        <p class="home-desc">你喜欢的那个人，也许早就带着一座城市的脾气向你走来。十五个关于爱的小选择，测出你的宿命恋人来自哪里。</p>
+
+        <div class="home-cta">
+          <button class="btn btn-primary" id="btnStart" type="button">开始测试</button>
+          <button class="btn btn-text" id="btnResume" type="button" hidden></button>
+        </div>
+        <p class="home-meta"><span>约 2 分钟</span><span>14 座城市</span><span>7 维恋爱性格</span></p>
+
+        <ul class="type-seals" id="typeSeals" aria-label="结果类别"></ul>
+      </div>
+
+      <aside class="home-roll" aria-label="可能测出的结果">
+        <div class="roll-inner" id="homeRoll"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 答题 ============ -->
+  <section class="screen screen-quiz" id="quiz" aria-label="答题">
+    <div class="quiz-wrap">
+      <header class="quiz-top">
+        <button class="btn-back" id="btnBack" type="button">上一问</button>
+        <p class="quiz-chapter" id="quizChapter"><b id="chNo">卷一</b><span id="chName"></span></p>
+        <p class="quiz-count"><b id="qNow">1</b><span id="qTotal">/ 15</span></p>
+      </header>
+
+      <div class="progress" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" aria-label="答题进度"></div>
+
+      <article class="q-card" id="qCard">
+        <p class="q-index" id="qIndex">第一问</p>
+        <h2 class="q-text" id="qText" tabindex="-1"></h2>
+        <ol class="q-options" id="qOptions"></ol>
+      </article>
+
+      <p class="quiz-hint">点选即进入下一问；电脑上可按 1–4 作答，← 返回</p>
+    </div>
+  </section>
+
+  <!-- ============ 分析中 ============ -->
+  <section class="screen screen-loading" id="loading" aria-live="polite">
+    <div class="ink-loader" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="loading-text" id="loadingText"></p>
+  </section>
+
+  <!-- ============ 结果 ============ -->
+  <section class="screen screen-result" id="result" aria-label="测试结果">
+    <div class="result-wrap">
+      <div class="result-card" id="resultCard"></div>
+      <div class="result-actions">
+        <button class="btn btn-primary" id="btnPoster" type="button">生成分享海报</button>
+        <div class="action-row">
+          <button class="btn btn-ghost" id="btnCopy" type="button">复制结果文案</button>
+          <button class="btn btn-ghost" id="btnGallery" type="button">十四城恋人图鉴</button>
+        </div>
+        <button class="btn btn-text" id="btnRestart" type="button">重新测试</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 分享海报 -->
+<div class="modal" id="posterModal" hidden>
+  <div class="modal-panel modal-poster" role="dialog" aria-modal="true" aria-label="分享海报">
+    <img id="posterImg" alt="测试结果分享海报">
+    <p class="modal-tip">手机长按图片即可保存；电脑点“下载海报”</p>
+    <div class="modal-actions">
+      <a class="btn btn-primary" id="posterDownload" download="测试结果.png" href="#">下载海报</a>
+      <button class="btn btn-text" type="button" data-close>关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图鉴 -->
+<div class="modal" id="galleryModal" hidden>
+  <div class="modal-panel modal-gallery" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+    <div class="gallery-head">
+      <h2 id="galleryTitle">十四城恋人图鉴</h2>
+      <button class="btn btn-text" type="button" data-close>关闭</button>
+    </div>
+    <div class="gallery-body" id="galleryBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript><p class="noscript">这个测试需要开启 JavaScript 才能运行。</p></noscript>
+
+<script>
+/* =========================================================
+ * 测测你的宿命恋人来自哪个城市 —— 数据文件
+ * 七个维度：甜(甜度) 稳(安全感) 趣(有趣) 燃(热烈) 灵(共鸣) 浪(浪漫) 自(自由)
+ * 每个选项：主维度 +2，次维度 +1
+ * ========================================================= */
+
+var CONFIG = {
+  id: 'destined-lover',
+  title: '测测你的宿命恋人来自哪个城市',
+  shortName: '我的宿命恋人',
+  pageDesc: '十五个关于爱的小选择，测出你的宿命恋人来自哪座城：成都、上海、重庆、杭州、广州，还是大理？',
+  theme: { bg: '#F0E5E8', primary: '#9E3A57' },          /* 浅藕荷 + 胭脂 */
+  titleLines: ['测测你的', '宿命恋人', '来自哪个城市'],
+  homeDesc: '你喜欢的那个人，也许早就带着一座城市的脾气向你走来。十五个关于爱的小选择，测出你的宿命恋人来自哪里。',
+  homeMeta: ['约 2 分钟', '14 座城市', '7 维恋爱性格'],
+  resultPre: '你的宿命恋人来自',
+  matchLabel: '宿命指数',
+  facts: [['TA来自', 'era'], ['恋爱人设', 'title'], ['恋爱类型', 'type']],
+  sections: { traits: '你的恋爱性格', reason: '为什么是TA', hidden: 'TA的隐藏属性', egg: '城市彩蛋', modern: '你们的第一次约会' },
+  rel: [{ label: '最强助攻', seal: '助' }, { label: '头号情敌', seal: '敌' }],
+  radarLabel: '你的七维恋爱性格',
+  reason: {
+    lead: '在七个维度里，你的“{a}”和“{b}”最为突出，',
+    both: '这正是来自{name}的TA最擅长给你的。',
+    one: '其中“{dim}”，正是来自{name}的TA最拿手的。',
+    none: '这套组合，和来自{name}的TA最合拍。'
+  },
+  second: '你的备选恋人属于{type}系，来自：',
+  posterFoot: '我的宿命恋人来自{name}，你的呢？',
+  copy: '我测出来的宿命恋人来自【{name}】（{type}系，{title}）',
+  copyAsk: '你的宿命恋人来自哪个城市？',
+  loading: ['正在翻看你的恋爱习惯', '比对十四座城市的脾气', '牵起那根红线', '把缘分装进信封'],
+  galleryTitle: '十四城恋人图鉴'
+};
+
+var DIMS = [
+  { k: '甜', n: '甜度', d: '想被宠，也爱宠人' },
+  { k: '稳', n: '安全感', d: '看重踏实和长久' },
+  { k: '趣', n: '有趣', d: '要一起笑、一起闹' },
+  { k: '燃', n: '热烈', d: '爱就要轰轰烈烈' },
+  { k: '灵', n: '共鸣', d: '需要聊得来、懂彼此' },
+  { k: '浪', n: '浪漫', d: '看重仪式感和心动' },
+  { k: '自', n: '自由', d: '需要彼此的空间' }
+];
+
+var CHAPTERS = [
+  { no: '第一章', name: '心动', sub: '看什么让你心动' },
+  { no: '第二章', name: '相处', sub: '看你们怎样相处' },
+  { no: '第三章', name: '磨合', sub: '看你怎样面对分歧' },
+  { no: '第四章', name: '心事', sub: '看你心里最在意什么' },
+  { no: '第五章', name: '余生', sub: '看你想要的以后' }
+];
+
+/* ch: 所属章（0-4）  q: 题干  o: [选项文字, 计分] */
+var QUESTIONS = [
+  /* ---------- 第一章 心动 ---------- */
+  { ch: 0, q: '什么样的瞬间，最容易让你心动？', o: [
+    ['TA记得你随口说过的一句话', { 甜: 2, 灵: 1 }],
+    ['TA逗你笑到停不下来', { 趣: 2, 甜: 1 }],
+    ['TA当着所有人的面，毫不犹豫站在你这边', { 燃: 2, 稳: 1 }],
+    ['你们同时说出了同一句话', { 灵: 2, 浪: 1 }]
+  ]},
+  { ch: 0, q: '你更容易被哪种人吸引？', o: [
+    ['靠谱、说到做到的人', { 稳: 2, 甜: 1 }],
+    ['有趣、有梗、会玩的人', { 趣: 2, 燃: 1 }],
+    ['神秘、有故事、有自己世界的人', { 自: 2, 灵: 1 }],
+    ['浪漫、懂仪式感的人', { 浪: 2, 燃: 1 }]
+  ]},
+  { ch: 0, q: '第一次约会，你最想去哪儿？', o: [
+    ['一家热热闹闹的火锅店', { 燃: 2, 趣: 1 }],
+    ['能看到落日的海边或江边', { 浪: 2, 自: 1 }],
+    ['一个安静的书店或展览', { 灵: 2, 自: 1 }],
+    ['去吃对方最爱的那家店', { 甜: 2, 稳: 1 }]
+  ]},
+
+  /* ---------- 第二章 相处 ---------- */
+  { ch: 1, q: '你理想中的周末约会是？', o: [
+    ['窝在家里一起做饭、看电影', { 稳: 2, 甜: 1 }],
+    ['去游乐园、密室、剧本杀，怎么闹怎么来', { 趣: 2, 燃: 1 }],
+    ['各做各的事，偶尔抬头看对方一眼', { 自: 2, 稳: 1 }],
+    ['精心安排一顿烛光晚餐', { 浪: 2, 甜: 1 }]
+  ]},
+  { ch: 1, q: '你希望对方回消息的速度是？', o: [
+    ['秒回，我需要被放在心上', { 甜: 2, 燃: 1 }],
+    ['不用秒回，但每晚要通个电话', { 稳: 2, 浪: 1 }],
+    ['什么时候回都行，我也挺忙的', { 自: 2, 趣: 1 }],
+    ['回得慢没关系，回得有意思就行', { 趣: 2, 灵: 1 }]
+  ]},
+  { ch: 1, q: '你最喜欢收到哪种礼物？', o: [
+    ['一束花和一张手写卡片', { 浪: 2, 甜: 1 }],
+    ['一次说走就走的旅行', { 燃: 2, 自: 1 }],
+    ['正好是你随口提过一次的东西', { 甜: 2, 灵: 1 }],
+    ['实用的、能用很久很久的东西', { 稳: 2, 自: 1 }]
+  ]},
+
+  /* ---------- 第三章 磨合 ---------- */
+  { ch: 2, q: '吵架的时候，你通常会？', o: [
+    ['当场说清楚，绝不隔夜', { 燃: 2, 稳: 1 }],
+    ['先各自冷静，想清楚了再谈', { 自: 2, 灵: 1 }],
+    ['吵着吵着就笑场了', { 趣: 2, 甜: 1 }],
+    ['写一段长长的话，把心里话都说出来', { 灵: 2, 浪: 1 }]
+  ]},
+  { ch: 2, q: '对方情绪低落时，你会？', o: [
+    ['抱住TA，什么都不用说', { 甜: 2, 稳: 1 }],
+    ['想尽办法逗TA开心', { 趣: 2, 燃: 1 }],
+    ['陪TA把事情从头到尾聊一遍', { 灵: 2, 稳: 1 }],
+    ['拉着TA出门，去吃好吃的、去兜风', { 燃: 2, 趣: 1 }]
+  ]},
+  { ch: 2, q: '对方有很多自己的朋友和爱好，你觉得？', o: [
+    ['挺好，我也需要自己的空间', { 自: 2, 灵: 1 }],
+    ['可以，但我得是TA心里最重要的那个', { 甜: 2, 燃: 1 }],
+    ['可以，只要TA坦坦荡荡、让我安心', { 稳: 2, 灵: 1 }],
+    ['太好了，大家一起玩，人多热闹', { 趣: 2, 自: 1 }]
+  ]},
+
+  /* ---------- 第四章 心事 ---------- */
+  { ch: 3, q: '你觉得爱情里最重要的是？', o: [
+    ['安全感', { 稳: 2, 甜: 1 }],
+    ['心动', { 浪: 2, 燃: 1 }],
+    ['懂我', { 灵: 2, 稳: 1 }],
+    ['自由', { 自: 2, 趣: 1 }]
+  ]},
+  { ch: 3, q: '哪句话最能打动你？', o: [
+    ['“有我在，别怕。”', { 甜: 2, 稳: 1 }],
+    ['“跟我走吧，去哪儿都行。”', { 燃: 2, 浪: 1 }],
+    ['“你说的，我都懂。”', { 灵: 2, 甜: 1 }],
+    ['“你做你自己就好。”', { 自: 2, 灵: 1 }]
+  ]},
+  { ch: 3, q: '你更喜欢哪种告白？', o: [
+    ['在满天烟花下，认真地说出口', { 浪: 2, 燃: 1 }],
+    ['不用说，日常里的照顾就是告白', { 稳: 2, 甜: 1 }],
+    ['当着所有朋友的面大声说', { 燃: 2, 趣: 1 }],
+    ['写在一封手写的长信里', { 灵: 2, 浪: 1 }]
+  ]},
+
+  /* ---------- 第五章 余生 ---------- */
+  { ch: 4, q: '你理想中的婚礼是？', o: [
+    ['海边或草地上的小婚礼，只请最亲的人', { 浪: 2, 自: 1 }],
+    ['热热闹闹办几十桌，亲戚朋友全都来', { 燃: 2, 趣: 1 }],
+    ['不办婚礼，两个人去旅行', { 自: 2, 浪: 1 }],
+    ['怎样都行，重要的是以后的日子', { 稳: 2, 灵: 1 }]
+  ]},
+  { ch: 4, q: '老了以后，你希望你们？', o: [
+    ['还能手牵手一起去买菜', { 甜: 2, 稳: 1 }],
+    ['还能天天斗嘴，谁也不服谁', { 趣: 2, 燃: 1 }],
+    ['还有说不完的话', { 灵: 2, 浪: 1 }],
+    ['还能一起去看世界', { 浪: 2, 自: 1 }]
+  ]},
+  { ch: 4, q: '最后一问：用一个字形容你想要的爱情？', o: [
+    ['「甜」：被宠，也宠着对方', { 甜: 2, 浪: 1 }],
+    ['「稳」：细水长流，岁岁年年', { 稳: 2, 灵: 1 }],
+    ['「燃」：轰轰烈烈，爱得尽兴', { 燃: 2, 趣: 1 }],
+    ['「懂」：不必多说，你都明白', { 灵: 2, 自: 1 }]
+  ]}
+];
+
+/* 七种恋爱类型的配色 */
+var TYPES = {
+  '甜宠': { color: '#B04A6A', soft: '#F5E0E7', name: '桃红', seal: '甜宠' },
+  '守护': { color: '#355C7D', soft: '#DDE5EE', name: '靛青', seal: '守护' },
+  '欢喜': { color: '#B0612A', soft: '#F4E4D6', name: '橘红', seal: '欢喜' },
+  '热烈': { color: '#A3302E', soft: '#F3DCDA', name: '朱红', seal: '热烈' },
+  '知己': { color: '#4D6B4F', soft: '#DFE9DF', name: '松绿', seal: '知己' },
+  '浪漫': { color: '#7A4C8A', soft: '#EBE0F0', name: '丁香', seal: '浪漫' },
+  '自由': { color: '#2D7276', soft: '#D9EBEC', name: '青碧', seal: '自由' }
+};
+
+/* 结果档案：p 为七维画像（1-10） */
+var RESULTS = [
+  {
+    id: 'chengdu', name: '成都', type: '甜宠', era: '四川', style: '花重锦官城',
+    title: '火锅味的温柔',
+    p: { 甜: 9, 稳: 8, 趣: 6, 燃: 6, 灵: 6, 浪: 3, 自: 6 },
+    slogan: '吃到最后一片毛肚，TA夹给了你。',
+    tags: ['会疼人', '好脾气', '爱吃', '有趣'],
+    traits: '你在感情里需要很多很多的甜。你希望被放在心上，也愿意把对方宠成小孩。你喜欢热热闹闹的日常，一起吃好吃的、一起说说笑笑，就是你心里最好的爱情。',
+    reason: '成都人脾气好、会生活，把“巴适”当成人生信条。来自成都的TA，会记得你不吃香菜，会在火锅店里帮你涮好每一片肉，也会在你生气时第一个认错。',
+    hidden: 'TA的隐藏属性是好脾气。你们很难吵起来，因为TA总是先笑场。',
+    egg: '西汉辞赋家司马相如是成都人。相传他以一曲《凤求凰》打动了卓文君，两人连夜私奔，留下一段流传两千年的爱情故事。',
+    modern: 'TA带你去一家藏在巷子里的老火锅，全程帮你涮菜，吃完再陪你去宽窄巷子散步消食。',
+    friend: { name: '一锅牛油火锅', line: '你们的感情，是从抢同一片毛肚开始的。' },
+    foe: { name: 'TA的麻将搭子', line: '三缺一的时候，TA会犹豫整整三秒钟。' }
+  },
+  {
+    id: 'suzhou', name: '苏州', type: '甜宠', era: '江苏', style: '人家尽枕河',
+    title: '吴侬软语的温柔',
+    p: { 甜: 9, 稳: 6, 趣: 1, 燃: 1, 灵: 7, 浪: 8, 自: 3 },
+    slogan: '就连吵架，TA都是轻声细语的。',
+    tags: ['温柔', '细腻', '体贴', '有耐心'],
+    traits: '你在感情里细腻又敏感，需要一个能接住你所有小情绪的人。你喜欢温柔的相处方式，慢慢来，细水长流。比起轰轰烈烈，你更想要岁月静好。',
+    reason: '苏州是一座温柔的城，评弹软糯、园林精巧，连说话都像在唱歌。来自苏州的TA细心体贴，会把你的每一句话都放在心上。',
+    hidden: 'TA的隐藏属性是会做饭。一碗清清爽爽的阳春面，TA能做得比外面的还好吃。',
+    egg: '清代沈复在《浮生六记》里写他和妻子陈芸的日常，两人就生活在苏州。林语堂说，芸是中国文学里最可爱的女人之一。',
+    modern: 'TA带你去平江路听一段评弹，在河边的茶馆坐一下午，傍晚再一起去吃松鼠鳜鱼。',
+    friend: { name: '一碗鸡头米', line: 'TA剥了整整一下午，全都留给了你。' },
+    foe: { name: 'TA养的那只猫', line: 'TA跟猫说话的语气，比跟你说话还温柔。' }
+  },
+  {
+    id: 'guangzhou', name: '广州', type: '守护', era: '广东', style: '老火靓汤',
+    title: '靓汤里的长情',
+    p: { 甜: 9, 稳: 10, 趣: 1, 燃: 2, 灵: 5, 浪: 3, 自: 8 },
+    slogan: '不说爱你，但每天都给你煲汤。',
+    tags: ['务实', '长情', '顾家', '低调'],
+    traits: '你在感情里最看重安全感。你不太需要甜言蜜语，更想要一个踏实可靠、能一起把日子过好的人。对你来说，爱不是说出来的，是一顿饭、一碗汤、一件件小事做出来的。',
+    reason: '广州人务实低调，不爱说漂亮话，却很会照顾人。来自广州的TA，会在你加班时煲好一锅汤，等你回家。',
+    hidden: 'TA的隐藏属性是会过日子。看起来低调，其实早就把你们以后的日子安排得清清楚楚。',
+    egg: '广东人爱煲“老火靓汤”，一锅汤常常要慢火煲上好几个小时，讲究的人家还会按季节换不同的汤料。',
+    modern: 'TA一大早带你去饮早茶，点好你爱吃的虾饺和凤爪，饭后一起去沙面散步。',
+    friend: { name: 'TA的妈妈', line: '第一次见面，就给你装了一大壶汤带走。' },
+    foe: { name: 'TA的早茶', line: '约会可以迟到，早茶不能不饮。' }
+  },
+  {
+    id: 'xian', name: '西安', type: '守护', era: '陕西', style: '在天愿作比翼鸟',
+    title: '城墙一样的可靠',
+    p: { 甜: 5, 稳: 9, 趣: 5, 燃: 8, 灵: 3, 浪: 5, 自: 4 },
+    slogan: '答应你的事，TA会记一辈子。',
+    tags: ['实在', '可靠', '护短', '大方'],
+    traits: '你在感情里要的是踏实和偏爱。你希望对方说到做到，关键时刻站在你这边。你骨子里有点传统，相信一辈子认真爱一个人就够了。',
+    reason: '西安人厚道实在，豪爽又护短。来自西安的TA不太会说情话，但会把你护在身后，把你爱吃的东西都端到你面前。',
+    hidden: 'TA的隐藏属性是护短。谁说你一句不好，TA第一个去找人家理论。',
+    egg: '白居易在《长恨歌》里写唐玄宗和杨贵妃：“在天愿作比翼鸟，在地愿为连理枝。”故事里的华清宫，就在今天的西安临潼。',
+    modern: 'TA带你去回民街，从街头吃到街尾，晚上再陪你骑车绕着城墙看灯。',
+    friend: { name: '一碗油泼面', line: 'TA把辣子泼得滋啦作响，回头问你：“香不香？”' },
+    foe: { name: 'TA的兄弟们', line: '一喊吃饭喝酒，TA就得先跟你“请个假”。' }
+  },
+  {
+    id: 'tianjin', name: '天津', type: '欢喜', era: '直辖市', style: '天津卫，哏儿都',
+    title: '自带捧哏的开心果',
+    p: { 甜: 7, 稳: 5, 趣: 10, 燃: 5, 灵: 6, 浪: 4, 自: 5 },
+    slogan: '跟TA在一起，每天都像在听相声。',
+    tags: ['幽默', '乐观', '嘴甜', '会哄人'],
+    traits: '你在感情里最怕无聊。你想要一个能逗你笑、和你斗嘴、陪你一起犯傻的人。你相信笑着过的日子，才是最好的日子。',
+    reason: '天津人天生会逗，说话自带节奏和包袱。来自天津的TA，一句话就能把你的坏心情说没，吵架也能吵成一段对口相声。',
+    hidden: 'TA的隐藏属性是嘴硬心软。嘴上说着“爱咋咋地”，转身就去给你买了煎饼果子。',
+    egg: '天津是有名的“曲艺之乡”，相声、快板、京韵大鼓在这里都有很深的群众基础，不少相声演员都把天津当作最重要的“码头”。',
+    modern: 'TA带你去茶馆听相声，你还没笑，TA先笑了；散场后再陪你去海河边吹吹风。',
+    friend: { name: '一套煎饼果子', line: 'TA永远记得你要多加一个蛋。' },
+    foe: { name: '台上的相声演员', line: 'TA笑得比跟你约会时还开心。' }
+  },
+  {
+    id: 'changsha', name: '长沙', type: '欢喜', era: '湖南', style: '湘女多情',
+    title: '直球型开心果',
+    p: { 甜: 6, 稳: 2, 趣: 10, 燃: 6, 灵: 4, 浪: 6, 自: 6 },
+    slogan: '喜欢就是喜欢，TA从来不藏着。',
+    tags: ['直球', '会玩', '热情', '有梗'],
+    traits: '你在感情里既想要热闹，也想要真心。你喜欢有活力、会玩、敢爱敢恨的人，和TA在一起，每天都像在过节。你不喜欢猜来猜去，喜欢就要说出来。',
+    reason: '长沙人热情直爽，会吃也会玩。来自长沙的TA会带你吃遍夜宵摊，喜欢你就大大方方地告诉全世界。',
+    hidden: 'TA的隐藏属性是“霸得蛮”。认定了你，就不会轻易放手。',
+    egg: '相传舜帝南巡时死在苍梧，娥皇、女英一路追到湘江边，泪水洒在竹子上，留下斑斑点点，这就是“湘妃竹”的由来。',
+    modern: 'TA带你去坡子街吃臭豆腐，再去江边看夜景，凌晨还要拉你去嗦一碗粉。',
+    friend: { name: '一盘口味虾', line: 'TA剥了满满一盘，自己一只都没吃。' },
+    foe: { name: 'TA的夜宵局', line: '晚上十二点，TA的朋友又在群里喊人了。' }
+  },
+  {
+    id: 'chongqing', name: '重庆', type: '热烈', era: '直辖市', style: '何当共剪西窗烛',
+    title: '火锅一样滚烫',
+    p: { 甜: 6, 稳: 5, 趣: 5, 燃: 10, 灵: 1, 浪: 4, 自: 2 },
+    slogan: '爱就要爱得热辣滚烫。',
+    tags: ['热烈', '直爽', '仗义', '护着你'],
+    traits: '你在感情里要的是浓烈。你喜欢爱憎分明、敢爱敢恨的人，受不了温吞水一样的关系。你相信爱一个人，就要全心全意、毫无保留。',
+    reason: '重庆人性子急、心肠热，说话直来直去，爱也来得轰轰烈烈。来自重庆的TA会在所有人面前护着你，也会为了你一句话跑遍半座山城。',
+    hidden: 'TA的隐藏属性是脾气急、心很软。吵架三分钟，和好只要一秒钟。',
+    egg: '在重庆朝天门，长江和嘉陵江在这里交汇，一黄一绿的江水并肩流上一段，才慢慢融在一起。',
+    modern: 'TA带你吃一顿地道的老火锅，再坐长江索道看夜景，最后在洪崖洞前给你拍了一百张照片。',
+    friend: { name: '一碗重庆小面', line: 'TA永远记得你要几两、要不要加辣。' },
+    foe: { name: 'TA的兄弟伙', line: '一个电话，TA就要去“摆龙门阵”了。' }
+  },
+  {
+    id: 'harbin', name: '哈尔滨', type: '热烈', era: '黑龙江', style: '冰雪里的一团火',
+    title: '冰城暖宝宝',
+    p: { 甜: 8, 稳: 5, 趣: 9, 燃: 7, 灵: 1, 浪: 7, 自: 5 },
+    slogan: '天再冷，TA也会把你的手揣进兜里。',
+    tags: ['热情', '幽默', '大方', '宠人'],
+    traits: '你在感情里喜欢热情、大方、有点浪漫的人。你希望对方能把你宠得明明白白，又能陪你一起疯、一起闹。你自己也是热心肠，爱一个人就毫无保留。',
+    reason: '哈尔滨人热情豪爽、说话幽默，对喜欢的人特别大方。来自哈尔滨的TA，会在零下三十度的冬天把你裹成粽子，也会带你去冰雪大世界撒欢。',
+    hidden: 'TA的隐藏属性是浪漫。别看TA大大咧咧，记纪念日比你还准。',
+    egg: '哈尔滨的冰灯历史很长，1963 年这里就办起了冰灯游园会。如今冰雪大世界用的冰，很多都是从松花江里采来的。',
+    modern: 'TA带你去中央大街啃冰棍，晚上逛冰雪大世界，冻透了再一起去吃一锅热乎乎的铁锅炖。',
+    friend: { name: '一盘锅包肉', line: 'TA把最脆的那块夹给了你。' },
+    foe: { name: 'TA家的热情亲戚', line: '第一次上门，你被塞了满满一肚子饺子。' }
+  },
+  {
+    id: 'wuhan', name: '武汉', type: '热烈', era: '湖北', style: '江城五月落梅花',
+    title: '不服周的深情',
+    p: { 甜: 3, 稳: 7, 趣: 6, 燃: 10, 灵: 4, 浪: 2, 自: 5 },
+    slogan: 'TA谁都不服，只服你。',
+    tags: ['直爽', '仗义', '嘴硬心软', '能扛事'],
+    traits: '你在感情里要的是有劲儿的爱。你喜欢有冲劲、有担当的人，关键时刻能扛事，平时又能和你热热闹闹地过日子。你不怕吵架，怕的是冷淡。',
+    reason: '武汉人性子直、嗓门大，骨子里有股不服输的劲，对认定的人又特别仗义。来自武汉的TA嘴上不饶人，可每天早上都会给你买好热干面。',
+    hidden: 'TA的隐藏属性是嘴硬心软。说话像吵架，做的全是爱。',
+    egg: '“高山流水遇知音”的故事就发生在武汉。相传伯牙在汉阳弹琴，只有钟子期听得懂，子期去世后，伯牙摔琴谢知音。今天的汉阳还有一座古琴台。',
+    modern: 'TA一大早带你去过早，下午去东湖骑车，晚上站在长江大桥上，陪你吹一整晚江风。',
+    friend: { name: '一碗热干面', line: 'TA记得你要多放萝卜丁。' },
+    foe: { name: 'TA的倔脾气', line: '认个错要三天，和好只要一碗热干面。' }
+  },
+  {
+    id: 'beijing', name: '北京', type: '知己', era: '直辖市', style: '胡同里的月光',
+    title: '胡同里的灵魂伴侣',
+    p: { 甜: 5, 稳: 5, 趣: 5, 燃: 4, 灵: 9, 浪: 3, 自: 8 },
+    slogan: '跟TA聊天，从天黑聊到天亮都不够。',
+    tags: ['能聊', '见识广', '幽默', '懂你'],
+    traits: '你在感情里最看重“聊得来”。你需要一个能接住你所有想法的人，聊书、聊电影、聊人生，也能聊路边的一只猫。你也需要一点自己的空间，不喜欢被黏得太紧。',
+    reason: '北京人见多识广、能聊会侃，心里装着大世界，也有自己的小天地。来自北京的TA懂你的梗，也懂你的沉默。',
+    hidden: 'TA的隐藏属性是讲究。看着随意，其实你的每一个小习惯，TA都记得清清楚楚。',
+    egg: '“胡同”这个词据说来自蒙古语，元朝时开始在北京使用。老北京有句话：“有名的胡同三百六，无名的胡同赛牛毛。”',
+    modern: 'TA带你在胡同里骑车，找一家小馆子吃炸酱面，晚上坐在后海边，一直聊到月亮出来。',
+    friend: { name: '一场话剧', line: '散场以后，你们聊剧情聊到了半夜。' },
+    foe: { name: 'TA的书架', line: 'TA一看起书来，世界上就只剩下书了。' }
+  },
+  {
+    id: 'hangzhou', name: '杭州', type: '知己', era: '浙江', style: '淡妆浓抹总相宜',
+    title: '西湖边的知心人',
+    p: { 甜: 4, 稳: 5, 趣: 2, 燃: 3, 灵: 8, 浪: 8, 自: 6 },
+    slogan: '你一个眼神，TA就懂了。',
+    tags: ['温和', '懂你', '有审美', '清醒'],
+    traits: '你在感情里需要深层的共鸣，也需要一点诗意。你希望对方懂你的情绪，也懂你的审美，在一起时不用解释太多，安安静静并肩走一段路就很好。',
+    reason: '杭州既有书卷气又有烟火气，西湖边的故事说了上千年。来自杭州的TA温和、细腻、有审美，懂你没说出口的那些话。',
+    hidden: 'TA的隐藏属性是会安排。看着随性，其实早就把周末的路线、餐厅和天气都查好了。',
+    egg: '《白蛇传》里，白娘子和许仙就是在西湖断桥边相遇的。一把借来的伞，牵出了一段流传千年的故事。',
+    modern: 'TA带你去西湖边散步，在断桥上等一场日落，再去龙井村喝一杯新茶。',
+    friend: { name: '一把伞', line: '下雨那天，TA把伞全都撑在了你这边。' },
+    foe: { name: 'TA的加班', line: '有时候，你得跟TA的工作抢时间。' }
+  },
+  {
+    id: 'shanghai', name: '上海', type: '浪漫', era: '直辖市', style: '外滩的晚风',
+    title: '外滩晚风里的仪式感',
+    p: { 甜: 8, 稳: 7, 趣: 2, 燃: 1, 灵: 6, 浪: 10, 自: 6 },
+    slogan: '每一个纪念日，TA都比你记得清楚。',
+    tags: ['精致', '体贴', '有分寸', '仪式感'],
+    traits: '你在感情里看重心动和仪式感。你喜欢被认真对待，喜欢花、礼物和精心准备的晚餐，也喜欢对方体面、有分寸的爱。对你来说，浪漫是被放在心上的证明。',
+    reason: '上海是一座讲究的城，连谈恋爱都带着精致的仪式感。来自上海的TA会记得你们的每一个纪念日，也会在外滩的晚风里给你一个惊喜。',
+    hidden: 'TA的隐藏属性是会做饭。一锅浓油赤酱的红烧肉，就能把你的胃彻底收服。',
+    egg: '上世纪七八十年代，外滩防汛墙边常常挤满谈恋爱的情侣，一对挨着一对，这段墙因此被叫作“情人墙”。',
+    modern: 'TA订好一家能看到外滩的餐厅，饭后陪你在武康路散步，一直把你送到家门口。',
+    friend: { name: '一束花', line: '没有节日，TA也会突然送你一束。' },
+    foe: { name: 'TA的日程表', line: '约会要提前一周排进TA的日历。' }
+  },
+  {
+    id: 'xiamen', name: '厦门', type: '浪漫', era: '福建', style: '鹭岛的海风',
+    title: '海风一样的自在',
+    p: { 甜: 6, 稳: 6, 趣: 4, 燃: 2, 灵: 6, 浪: 9, 自: 8 },
+    slogan: '和TA在一起，每天都像在度假。',
+    tags: ['文艺', '浪漫', '随性', '温柔'],
+    traits: '你在感情里想要浪漫，也想要自由。你喜欢和对方一起看海、拍照、逛小店，也希望彼此都有自己的生活。你相信最好的爱，是让彼此都更自在。',
+    reason: '厦门是一座文艺的海岛，海风、老房子和小店，让人一不小心就心动。来自厦门的TA浪漫、随性、温柔，会陪你在海边等完一整场日落。',
+    hidden: 'TA的隐藏属性是会泡茶。很多闽南人家里都有一套功夫茶具，TA泡的茶，比情话还暖。',
+    egg: '每到中秋，厦门人都爱“博饼”：一家人围着一只大碗轮流掷骰子，按点数分月饼，最高的奖叫“状元”。',
+    modern: 'TA带你坐船去鼓浪屿，在小巷里迷路，傍晚再沿着环岛路骑车看日落。',
+    friend: { name: '一场日落', line: '你们在海边等了一个小时，谁都没舍得先走。' },
+    foe: { name: 'TA的冲浪板', line: '浪好的日子，TA的心会飞到海上去。' }
+  },
+  {
+    id: 'dali', name: '大理', type: '自由', era: '云南', style: '苍山洱海',
+    title: '风花雪月里的自由灵魂',
+    p: { 甜: 6, 稳: 4, 趣: 3, 燃: 3, 灵: 9, 浪: 6, 自: 10 },
+    slogan: '我们都自由，又都选择了彼此。',
+    tags: ['自由', '随性', '通透', '浪漫'],
+    traits: '你在感情里最需要空间。你不喜欢被管、被黏、被要求，希望两个人都是完整的自己，在一起是因为喜欢，而不是因为需要。你很浪漫，但你的浪漫是自由的。',
+    reason: '大理住着很多追求自由的人，日子过得慢，心也放得开。来自大理的TA不会查你的手机，也不会逼你改变，只会在你需要时，陪你在洱海边坐一下午。',
+    hidden: 'TA的隐藏属性是会生活。随手摘一把花、煮一壶茶，就能把平常的一天过成诗。',
+    egg: '1959 年的电影《五朵金花》在大理取景，故事里的阿鹏和金花在蝴蝶泉边相会，蝴蝶泉从此成了有名的爱情地标。',
+    modern: 'TA骑着电瓶车带你环洱海，在路边停下来看云，晚上一起去古城的小酒馆听民谣。',
+    friend: { name: '洱海上的一朵云', line: '你们看着它变了一下午的形状。' },
+    foe: { name: 'TA的下一场旅行', line: 'TA说走就走，不过这次会先问你：一起吗？' }
+  }
+];
+
+</script>
+<script>
+/* =========================================================
+ * 评分引擎（纯函数，不依赖页面）
+ * 1. 累加每个维度的原始分
+ * 2. 与“随机作答”的期望值比较，换算成标准分 z（消除各维度出现次数不同带来的偏差）
+ * 3. 把 z 向量与每个结果的画像原型做余弦相似度，取最接近者
+ * ========================================================= */
+var Engine = (function () {
+  var KEYS = DIMS.map(function (d) { return d.k; });
+
+  /* 随机作答时每个维度的期望与标准差（由题库自动算出，改题后无需手动调整） */
+  var STATS = (function () {
+    var mean = {}, variance = {};
+    KEYS.forEach(function (k) { mean[k] = 0; variance[k] = 0; });
+    QUESTIONS.forEach(function (q) {
+      var n = q.o.length;
+      KEYS.forEach(function (k) {
+        var s = 0, s2 = 0;
+        q.o.forEach(function (opt) { var v = opt[1][k] || 0; s += v; s2 += v * v; });
+        var m = s / n;
+        mean[k] += m;
+        variance[k] += s2 / n - m * m;
+      });
+    });
+    var sd = {};
+    KEYS.forEach(function (k) { sd[k] = Math.sqrt(variance[k]) || 1; });
+    return { mean: mean, sd: sd };
+  })();
+
+  function center(vec) {
+    var avg = KEYS.reduce(function (a, k) { return a + vec[k]; }, 0) / KEYS.length;
+    var out = {};
+    KEYS.forEach(function (k) { out[k] = vec[k] - avg; });
+    return out;
+  }
+
+  function cosine(a, b) {
+    var dot = 0, na = 0, nb = 0;
+    KEYS.forEach(function (k) { dot += a[k] * b[k]; na += a[k] * a[k]; nb += b[k] * b[k]; });
+    if (!na || !nb) return 0;
+    return dot / Math.sqrt(na * nb);
+  }
+
+  /* 人物原型：假设一个“性格如画像 p 的人”来答全部题目（按 softmax 倾向选择），
+   * 计算他的期望标准分，作为该人物的匹配向量。这样原型与真实答题能落到的空间一致。 */
+  var PERSONA_BETA = 1.0;
+  function prototypeOf(f) {
+    var pc = center(f.p);
+    var raw = {};
+    KEYS.forEach(function (k) { raw[k] = 0; });
+    QUESTIONS.forEach(function (q) {
+      var u = q.o.map(function (opt) {
+        var s = 0;
+        Object.keys(opt[1]).forEach(function (k) { s += opt[1][k] / STATS.sd[k] * pc[k]; });
+        return s;
+      });
+      var mx = Math.max.apply(null, u);
+      var ex = u.map(function (x) { return Math.exp(PERSONA_BETA * (x - mx)); });
+      var tot = ex.reduce(function (a, b) { return a + b; }, 0);
+      q.o.forEach(function (opt, i) {
+        Object.keys(opt[1]).forEach(function (k) { raw[k] += ex[i] / tot * opt[1][k]; });
+      });
+    });
+    return center(zScores(raw));
+  }
+
+  var FIG_VECS = RESULTS.map(prototypeOf);
+
+  /* answers: 长度等于题目数的数组，每项为选项原始下标（0-3） */
+  function rawScores(answers) {
+    var s = {};
+    KEYS.forEach(function (k) { s[k] = 0; });
+    answers.forEach(function (ai, qi) {
+      if (ai === null || ai === undefined) return;
+      var pts = QUESTIONS[qi].o[ai][1];
+      Object.keys(pts).forEach(function (k) { s[k] += pts[k]; });
+    });
+    return s;
+  }
+
+  function zScores(raw) {
+    var z = {};
+    KEYS.forEach(function (k) { z[k] = (raw[k] - STATS.mean[k]) / STATS.sd[k]; });
+    return z;
+  }
+
+  /* 契合度百分比：相似度越高越接近 99% */
+  function toPercent(cos) {
+    var c = Math.max(0, Math.min(1, cos));
+    return Math.round(68 + 31 * Math.sqrt(c));
+  }
+
+  function rank(z) {
+    var u = center(z);
+    return RESULTS.map(function (f, i) {
+      var c = cosine(u, FIG_VECS[i]);
+      return { fig: f, cos: c, pct: toPercent(c) };
+    }).sort(function (a, b) { return b.cos - a.cos; });
+  }
+
+  /* 雷达图用：把 z 换算为 0-100 的展示分 */
+  function displayScores(z) {
+    var d = {};
+    KEYS.forEach(function (k) {
+      d[k] = Math.round(Math.max(10, Math.min(99, 52 + z[k] * 21)));
+    });
+    return d;
+  }
+
+  function evaluate(answers) {
+    var raw = rawScores(answers);
+    var z = zScores(raw);
+    var ranking = rank(z);
+    var order = KEYS.slice().sort(function (a, b) { return z[b] - z[a]; });
+    return {
+      raw: raw, z: z, display: displayScores(z),
+      ranking: ranking, best: ranking[0], second: ranking[1],
+      topDims: order.slice(0, 2), lowDim: order[order.length - 1]
+    };
+  }
+
+  return { KEYS: KEYS, STATS: STATS, evaluate: evaluate, rank: rank, zScores: zScores, rawScores: rawScores, cosine: cosine, center: center };
+})();
+
+</script>
+<script>
+/* =========================================================
+ * 古风人格测试 —— 通用交互逻辑
+ * 所有文案、标签、配色都来自 data.js 中的 CONFIG / DIMS / CHAPTERS / QUESTIONS / TYPES / RESULTS
+ * 流程：首页 → 逐题作答 → 分析 → 结果 → 海报 / 复制 / 图鉴 / 重新测试
+ * ========================================================= */
+(function () {
+  'use strict';
+
+  var C = CONFIG;
+  var TOTAL = QUESTIONS.length;
+  var MARKS = ['甲', '乙', '丙', '丁', '戊', '己'];
+  var STORE_KEY = 'ancientTest.' + C.id + '.v1';
+  var TYPE_ORDER = Object.keys(TYPES);
+  var FONT = '"Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC","Source Han Serif CN","Songti SC","STSong","SimSun","Noto Serif CJK TC",serif';
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var state = null;      // { orders, answers, idx, done }
+  var busy = false;
+  var lastChapter = -1;
+  var lastResult = null;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  /* 模板替换：fmt('我是{name}', {name: '李白'}) */
+  function fmt(tpl, data) {
+    return String(tpl).replace(/\{(\w+)\}/g, function (m, k) { return data[k] !== undefined ? data[k] : m; });
+  }
+  function dimName(k) { for (var i = 0; i < DIMS.length; i++) if (DIMS[i].k === k) return DIMS[i].n; return k; }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, reduceMotion ? 0 : ms); }); }
+
+  /* 1-99 转中文数字 */
+  function cn(n) {
+    var d = '〇一二三四五六七八九';
+    if (n <= 10) return n === 10 ? '十' : d[n];
+    if (n < 20) return '十' + d[n % 10];
+    return d[Math.floor(n / 10)] + '十' + (n % 10 ? d[n % 10] : '');
+  }
+  function cnDate() {
+    var now = new Date(), d = '〇一二三四五六七八九';
+    var y = String(now.getFullYear()).split('').map(function (c) { return d[+c]; }).join('');
+    return y + '年' + cn(now.getMonth() + 1) + '月';
+  }
+
+  /* ---------- 状态与本地存储 ---------- */
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  function newState() {
+    return {
+      orders: QUESTIONS.map(function (q) { return shuffle(q.o.map(function (_, i) { return i; })); }),
+      answers: QUESTIONS.map(function () { return null; }),
+      idx: 0,
+      done: false
+    };
+  }
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* 无痕模式等情况忽略 */ } }
+  function clearSaved() { try { localStorage.removeItem(STORE_KEY); } catch (e) {} }
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (!s || !Array.isArray(s.orders) || !Array.isArray(s.answers)) return null;
+      if (s.orders.length !== TOTAL || s.answers.length !== TOTAL) return null;
+      for (var i = 0; i < TOTAL; i++) {
+        var n = QUESTIONS[i].o.length, ord = s.orders[i];
+        if (!Array.isArray(ord) || ord.length !== n) return null;
+        if (ord.slice().sort().join() !== QUESTIONS[i].o.map(function (_, k) { return k; }).join()) return null;
+        var a = s.answers[i];
+        if (a !== null && !(a >= 0 && a < n && a === Math.floor(a))) return null;
+      }
+      if (!(s.idx >= 0 && s.idx < TOTAL)) s.idx = 0;
+      s.done = !!s.done && s.answers.every(function (a) { return a !== null; });
+      return s;
+    } catch (e) { return null; }
+  }
+  function answeredCount(s) { return s.answers.filter(function (a) { return a !== null; }).length; }
+
+  /* ---------- 屏幕切换 ---------- */
+  function show(id) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) screens[i].classList.toggle('is-active', screens[i].id === id);
+    document.body.setAttribute('data-screen', id);
+    window.scrollTo(0, 0);
+  }
+
+  /* =========================================================
+   * 首页
+   * ========================================================= */
+  function initHome() {
+    var seals = $('typeSeals');
+    seals.style.setProperty('--n', TYPE_ORDER.length);
+    seals.innerHTML = TYPE_ORDER.map(function (t) {
+      return '<li style="--c:' + TYPES[t].color + '">' + t + '</li>';
+    }).join('');
+
+    $('homeRoll').innerHTML = TYPE_ORDER.map(function (t) {
+      var names = RESULTS.filter(function (f) { return f.type === t; }).map(function (f) { return esc(f.name); });
+      return '<p class="roll-col" style="--c:' + TYPES[t].color + '"><b>' + t + '</b>' + names.join('<i>·</i>') + '</p>';
+    }).join('');
+
+    refreshResume();
+  }
+
+  function refreshResume() {
+    var saved = load(), btn = $('btnResume');
+    if (saved && saved.done) {
+      btn.textContent = '查看上次的结果';
+      btn.hidden = false;
+    } else if (saved && answeredCount(saved) > 0) {
+      btn.textContent = '继续上次的作答（第 ' + (saved.idx + 1) + ' 问）';
+      btn.hidden = false;
+    } else {
+      btn.hidden = true;
+    }
+  }
+
+  function startNew() {
+    state = newState();
+    lastChapter = -1;
+    save();
+    show('quiz');
+    renderQuestion('none');
+  }
+
+  function resume() {
+    var saved = load();
+    if (!saved) { startNew(); return; }
+    state = saved;
+    lastChapter = -1;
+    if (state.done) { showResult(false); return; }
+    show('quiz');
+    renderQuestion('none');
+  }
+
+  /* =========================================================
+   * 答题
+   * ========================================================= */
+  function buildProgress() {
+    $('progress').style.gridTemplateColumns = 'repeat(' + CHAPTERS.length + ', 1fr)';
+    $('progress').setAttribute('aria-valuemax', TOTAL);
+    $('qTotal').textContent = '/ ' + TOTAL;
+    $('progress').innerHTML = CHAPTERS.map(function (c, ci) {
+      return '<div class="pg-seg" data-ch="' + ci + '"><div class="pg-bar"><i></i></div><span>' + c.name + '</span></div>';
+    }).join('');
+  }
+
+  function updateProgress() {
+    var segs = $('progress').children;
+    var curCh = QUESTIONS[state.idx].ch;
+    for (var ci = 0; ci < segs.length; ci++) {
+      var total = 0, done = 0;
+      for (var qi = 0; qi < TOTAL; qi++) {
+        if (QUESTIONS[qi].ch !== ci) continue;
+        total++;
+        if (state.answers[qi] !== null) done++;
+      }
+      segs[ci].querySelector('i').style.width = (total ? done / total * 100 : 0) + '%';
+      segs[ci].classList.toggle('is-current', ci === curCh);
+      segs[ci].classList.toggle('is-full', total > 0 && done === total);
+    }
+    var n = answeredCount(state);
+    $('progress').setAttribute('aria-valuenow', n);
+    $('progress').setAttribute('aria-valuetext', '已答 ' + n + ' 题，共 ' + TOTAL + ' 题');
+  }
+
+  function renderQuestion(dir) {
+    var qi = state.idx, q = QUESTIONS[qi], ch = CHAPTERS[q.ch];
+    var chEl = $('quizChapter');
+    $('chNo').textContent = ch.no;
+    $('chName').textContent = ch.name;
+    if (lastChapter !== q.ch) {
+      chEl.classList.remove('flash'); void chEl.offsetWidth; chEl.classList.add('flash');
+      chEl.title = ch.sub;
+      lastChapter = q.ch;
+    }
+    $('qNow').textContent = qi + 1;
+    $('qIndex').textContent = '第' + cn(qi + 1) + '问';
+    $('qText').textContent = q.q;
+    $('btnBack').textContent = qi === 0 ? '首页' : '上一问';
+
+    var picked = state.answers[qi];
+    $('qOptions').innerHTML = state.orders[qi].map(function (oi, pos) {
+      var on = picked === oi;
+      return '<li><button type="button" class="opt' + (on ? ' is-picked' : '') + '" data-oi="' + oi + '" aria-pressed="' + on + '">' +
+        '<span class="opt-mark" aria-hidden="true">' + MARKS[pos] + '</span><span class="opt-text">' + esc(q.o[oi][0]) + '</span></button></li>';
+    }).join('');
+
+    updateProgress();
+
+    var card = $('qCard');
+    card.classList.remove('out-left', 'out-right', 'in-left', 'in-right');
+    if (dir !== 'none' && !reduceMotion) { void card.offsetWidth; card.classList.add(dir === 'prev' ? 'in-left' : 'in-right'); }
+    try { $('qText').focus({ preventScroll: true }); } catch (e) {}
+  }
+
+  function leave(dir) {
+    var card = $('qCard');
+    card.classList.remove('in-left', 'in-right');
+    if (reduceMotion) return Promise.resolve();
+    card.classList.add(dir === 'prev' ? 'out-right' : 'out-left');
+    return wait(190);
+  }
+
+  function pick(oi) {
+    if (busy || !state) return;
+    busy = true;
+    var qi = state.idx;
+    state.answers[qi] = oi;
+    save();
+
+    var btns = $('qOptions').querySelectorAll('.opt');
+    for (var i = 0; i < btns.length; i++) {
+      var on = +btns[i].getAttribute('data-oi') === oi;
+      btns[i].classList.toggle('is-picked', on);
+      btns[i].setAttribute('aria-pressed', on);
+      if (on) btns[i].classList.add('just-picked');
+    }
+    updateProgress();
+
+    wait(260).then(function () {
+      if (qi < TOTAL - 1) {
+        return leave('next').then(function () {
+          state.idx = qi + 1;
+          save();
+          renderQuestion('next');
+        });
+      }
+      var firstEmpty = state.answers.indexOf(null);
+      if (firstEmpty !== -1) {            // 理论上不会发生：有漏答则跳回
+        state.idx = firstEmpty; save(); renderQuestion('prev'); return;
+      }
+      return finish();
+    }).then(function () { busy = false; }, function () { busy = false; });
+  }
+
+  function back() {
+    if (busy || !state) return;
+    if (state.idx === 0) { save(); refreshResume(); show('home'); return; }
+    busy = true;
+    leave('prev').then(function () {
+      state.idx -= 1;
+      save();
+      renderQuestion('prev');
+      busy = false;
+    });
+  }
+
+  /* =========================================================
+   * 分析 → 结果
+   * ========================================================= */
+  function finish() {
+    state.done = true;
+    save();
+    show('loading');
+    var el = $('loadingText');
+    var p = Promise.resolve();
+    C.loading.forEach(function (t) {
+      p = p.then(function () { el.textContent = t; return wait(650); });
+    });
+    return p.then(function () { showResult(true); });
+  }
+
+  function radarSVG(scores, top, color) {
+    var K = Engine.KEYS, n = K.length;
+    var cx = 170, cy = 150, R = 100;
+    function ang(i) { return -Math.PI / 2 + i * 2 * Math.PI / n; }
+    function pt(i, r) { return [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))]; }
+    function poly(r) { return K.map(function (_, i) { var p = pt(i, r); return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '); }
+
+    var s = '<svg viewBox="0 0 340 300" role="img" aria-label="' + esc(C.radarLabel) + '雷达图：' +
+      K.map(function (k) { return dimName(k) + scores[k]; }).join('，') + '">';
+    [0.25, 0.5, 0.75, 1].forEach(function (f, i) {
+      s += '<polygon points="' + poly(R * f) + '" fill="' + (i === 3 ? 'rgba(255,255,255,.5)' : 'none') + '" stroke="rgba(31,39,36,' + (i === 3 ? .28 : .12) + ')" stroke-width="1"/>';
+    });
+    K.forEach(function (_, i) {
+      var p = pt(i, R);
+      s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="rgba(31,39,36,.12)"/>';
+    });
+    var user = K.map(function (k, i) { var p = pt(i, R * scores[k] / 100); return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+    s += '<polygon points="' + user + '" fill="' + color + '" fill-opacity=".2" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/>';
+    K.forEach(function (k, i) {
+      var p = pt(i, R * scores[k] / 100);
+      s += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3.2" fill="' + color + '"/>';
+    });
+    K.forEach(function (k, i) {
+      var p = pt(i, R + 24), c = Math.cos(ang(i));
+      var anchor = c > 0.3 ? 'start' : (c < -0.3 ? 'end' : 'middle');
+      var hot = top.indexOf(k) !== -1;
+      var dy = Math.sin(ang(i)) > 0.5 ? 12 : (Math.sin(ang(i)) < -0.5 ? -2 : 5);
+      s += '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + dy).toFixed(1) + '" text-anchor="' + anchor + '" font-size="14" font-family=\'' + FONT + '\' fill="' + (hot ? color : '#4E5A56') + '"' + (hot ? ' font-weight="700"' : '') + '>' +
+        dimName(k) + '<tspan font-size="12" dx="4" fill="' + (hot ? color : '#85918C') + '">' + scores[k] + '</tspan></text>';
+    });
+    return s + '</svg>';
+  }
+
+  function topDimsOf(f) {
+    return Engine.KEYS.slice().sort(function (a, b) { return f.p[b] - f.p[a]; }).slice(0, 2);
+  }
+
+  /* 可选的双端刻度（如“南方 / 北方浓度”），由 CONFIG.meter 配置 */
+  /* 按与各结果的相似度加权：右端浓度 = 右端结果（如“北方”）的权重之和 */
+  function meterOf(r) {
+    var m = C.meter;
+    if (!m) return null;
+    var best = r.ranking[0].cos, sum = [0, 0], cnt = [0, 0];
+    r.ranking.forEach(function (x) {
+      var side = x.fig[m.field] === m.rightValue ? 1 : 0;
+      sum[side] += Math.exp((m.temp || 5) * (x.cos - best));
+      cnt[side]++;
+    });
+    var a = sum[0] / Math.max(cnt[0], 1), b = sum[1] / Math.max(cnt[1], 1);   /* 按两端结果数量归一，避免哪一端结果多就偏向哪一端 */
+    var v = Math.round(b / (a + b) * 100);
+    /* 浓度方向与主结果保持一致：主结果在哪一端，浓度就至少略偏向那一端 */
+    v = r.best.fig[m.field] === m.rightValue ? Math.max(v, 52) : Math.min(v, 48);
+    v = Math.max(3, Math.min(97, v));
+    return { left: 100 - v, right: v };
+  }
+
+  function meterHTML(r) {
+    var mv = meterOf(r), m = C.meter;
+    if (!mv) return '';
+    return '<div class="rc-meter" role="img" aria-label="' + esc(m.leftLabel + m.unit + ' ' + mv.left + '%，' + m.rightLabel + m.unit + ' ' + mv.right + '%') + '">' +
+      '<p><span>' + esc(m.leftLabel + m.unit) + '<b>' + mv.left + '%</b></span><span>' + esc(m.rightLabel + m.unit) + '<b>' + mv.right + '%</b></span></p>' +
+      '<div class="rm-bar"><i class="rm-l" style="flex-grow:' + mv.left + '"></i><i class="rm-r" style="flex-grow:' + mv.right + '"></i></div>' +
+    '</div>';
+  }
+
+  function fmtData(r) {
+    var f = r.best.fig, mv = meterOf(r) || {};
+    return { name: f.name, type: f.type, title: f.title, left: mv.left, right: mv.right };
+  }
+
+  function dynamicReason(r) {
+    var f = r.best.fig, top = r.topDims, ft = topDimsOf(f);
+    var overlap = top.filter(function (k) { return ft.indexOf(k) !== -1; });
+    var data = { a: dimName(top[0]), b: dimName(top[1]), name: f.name, dim: overlap.length ? dimName(overlap[0]) : '' };
+    var tail = overlap.length === 2 ? C.reason.both : (overlap.length === 1 ? C.reason.one : C.reason.none);
+    return fmt(C.reason.lead + tail, data);
+  }
+
+  function showResult(animate) {
+    var r = Engine.evaluate(state.answers);
+    lastResult = r;
+    var f = r.best.fig, t = TYPES[f.type];
+    var sec = r.second;
+    var secPct = Math.min(sec.pct, r.best.pct - 1);
+    var card = $('resultCard');
+    var S = C.sections;
+    card.style.setProperty('--type', t.color);
+    card.style.setProperty('--type-soft', t.soft);
+    document.documentElement.style.setProperty('--type-soft', t.soft);
+
+    var nameLen = Array.from ? Array.from(f.name).length : f.name.length;
+    var facts = C.facts.map(function (pair) {
+      return '<span>' + pair[0] + '<b>' + esc(f[pair[1]]) + '</b></span>';
+    }).join('');
+
+    card.innerHTML =
+      '<div class="rc-head">' +
+        '<div class="rc-left">' +
+          '<p class="rc-pre">' + esc(C.resultPre) + '</p>' +
+          '<p class="rc-type"><b>' + f.type + '</b>' + esc(f.title) + '</p>' +
+          '<p class="rc-slogan">「' + esc(f.slogan) + '」</p>' +
+          '<p class="rc-match"><span>' + esc(C.matchLabel) + '</span><b>' + r.best.pct + '<small>%</small></b></p>' +
+        '</div>' +
+        '<div class="rc-slip len-' + Math.min(nameLen, 6) + '">' +
+          '<h2 class="rc-name">' + esc(f.name) + '</h2>' +
+          '<p class="rc-style">' + esc(f.style.replace(/，/g, '　')) + '</p>' +
+          '<span class="seal rc-seal" style="background:' + t.color + ';box-shadow:inset 0 0 0 2px ' + t.color + ',inset 0 0 0 3.5px rgba(251,244,236,.85)" aria-hidden="true">' + f.type + '</span>' +
+        '</div>' +
+      '</div>' +
+      meterHTML(r) +
+      '<p class="rc-facts">' + facts + '</p>' +
+      '<ul class="rc-tags">' + f.tags.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+      '<div class="rc-radar">' + radarSVG(r.display, r.topDims, t.color) +
+        '<p class="rc-radar-note">' + esc(C.radarLabel) + '：<b>' + dimName(r.topDims[0]) + '</b>与<b>' + dimName(r.topDims[1]) + '</b>最强</p></div>' +
+      '<section class="rc-sec"><h3>' + S.traits + '</h3><p>' + esc(f.traits) + '</p></section>' +
+      '<section class="rc-sec"><h3>' + S.reason + '</h3><p class="rc-dyn">' + esc(dynamicReason(r)) + '</p><p>' + esc(f.reason) + '</p></section>' +
+      '<section class="rc-sec"><h3>' + S.hidden + '</h3><p>' + esc(f.hidden) + '</p></section>' +
+      '<section class="rc-sec rc-egg"><h3>' + S.egg + '</h3><p>' + esc(f.egg) + '</p></section>' +
+      '<section class="rc-sec"><h3>' + S.modern + '</h3><p>' + esc(f.modern) + '</p></section>' +
+      '<div class="rc-rel">' +
+        '<div class="rel-friend"><em class="seal" aria-hidden="true">' + C.rel[0].seal + '</em><strong>' + esc(f.friend.name) + '</strong><span class="sr-only">（' + C.rel[0].label + '）</span><p>' + esc(f.friend.line) + '</p></div>' +
+        '<div class="rel-foe"><em class="seal" aria-hidden="true">' + C.rel[1].seal + '</em><strong>' + esc(f.foe.name) + '</strong><span class="sr-only">（' + C.rel[1].label + '）</span><p>' + esc(f.foe.line) + '</p></div>' +
+      '</div>' +
+      '<p class="rc-second">' + esc(fmt(C.second, { type: sec.fig.type })) + '<b>' + esc(sec.fig.name) + '</b>（契合度 ' + secPct + '%）</p>' +
+      '<div class="rc-foot"><b>' + esc(C.title) + '</b><span>' + cnDate() + '</span></div>';
+
+    card.classList.remove('reveal');
+    show('result');
+    if (animate && !reduceMotion) { void card.offsetWidth; card.classList.add('reveal'); }
+    buildGallery(f.id);
+  }
+
+  /* =========================================================
+   * 分享海报（Canvas 绘制，1080×1440，适配小红书 3:4）
+   * ========================================================= */
+  var NO_LINE_START = '，。！？、；：”’」』）》…—';
+  function wrap(ctx, text, maxW) {
+    /* 英文字母和数字连成一段，不在中间断行（如“TA”“1924”） */
+    var tokens = text.match(/[A-Za-z0-9.%]+|[\s\S]/g) || [];
+    var lines = [], line = '';
+    for (var i = 0; i < tokens.length; i++) {
+      var ch = tokens[i], test = line + ch;
+      if (ctx.measureText(test).width > maxW && line && NO_LINE_START.indexOf(ch.charAt(0)) === -1) {
+        lines.push(line); line = ch;
+      } else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  function rrect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+  }
+  function fitFont(ctx, text, weight, size, min, maxW) {
+    ctx.font = weight + ' ' + size + 'px ' + FONT;
+    while (ctx.measureText(text).width > maxW && size > min) { size -= 1; ctx.font = weight + ' ' + size + 'px ' + FONT; }
+    return size;
+  }
+
+  function drawPoster(r) {
+    var f = r.best.fig, t = TYPES[f.type];
+    var W = 1080, H = 1440;
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d');
+    ctx.textBaseline = 'alphabetic';
+    var bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#E4EBE6';
+
+    // 底与框
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(31,39,36,.18)'; ctx.lineWidth = 2; ctx.strokeRect(44, 44, W - 88, H - 88);
+    ctx.fillStyle = '#F7F6F0'; ctx.fillRect(60, 60, W - 120, H - 120);
+    ctx.fillStyle = t.color; ctx.fillRect(60, 60, W - 120, 12);
+
+    // 页眉
+    ctx.fillStyle = '#85918C'; ctx.textAlign = 'left';
+    fitFont(ctx, C.title, '400', 28, 20, 600);
+    ctx.fillText(C.title, 120, 150);
+
+    // 左栏
+    ctx.fillStyle = '#4E5A56'; fitFont(ctx, C.resultPre, '400', 34, 24, 580);
+    ctx.fillText(C.resultPre, 120, 236);
+    ctx.fillStyle = t.color; ctx.font = '700 66px ' + FONT;
+    ctx.fillText(f.type, 120, 322);
+    var tw = ctx.measureText(f.type).width;
+    ctx.fillStyle = '#4E5A56'; fitFont(ctx, f.title, '400', 36, 22, 600 - tw - 24);
+    ctx.fillText(f.title, 120 + tw + 24, 320);
+
+    ctx.fillStyle = '#1F2724'; ctx.font = '700 54px ' + FONT;
+    var sl = wrap(ctx, '「' + f.slogan + '」', 580);
+    var y = 420;
+    sl.forEach(function (l) { ctx.fillText(l, 112, y); y += 80; });
+
+    var my = Math.max(y + 56, 620);
+    ctx.fillStyle = '#85918C'; ctx.font = '400 30px ' + FONT;
+    ctx.fillText(C.matchLabel, 120, my);
+    ctx.fillStyle = t.color; ctx.font = '900 120px ' + FONT;
+    ctx.fillText(String(r.best.pct), 112, my + 120);
+    var pw = ctx.measureText(String(r.best.pct)).width;
+    ctx.font = '700 52px ' + FONT; ctx.fillText('%', 118 + pw, my + 118);
+
+    // 右侧题签（竖排名称，按字数自适应字号）
+    var sx = 752, sy = 150, sw = 196, sh = 560;
+    ctx.fillStyle = '#FFFEFA'; ctx.fillRect(sx, sy, sw, sh);
+    ctx.strokeStyle = '#1F2724'; ctx.lineWidth = 4; ctx.strokeRect(sx, sy, sw, sh);
+    ctx.lineWidth = 1.5; ctx.strokeRect(sx + 12, sy + 12, sw - 24, sh - 24);
+    var name = Array.from ? Array.from(f.name) : f.name.split('');
+    var fs = Math.min(112, Math.floor((sh - 90) / name.length) - 8);
+    ctx.fillStyle = '#1F2724'; ctx.font = '900 ' + fs + 'px ' + FONT; ctx.textAlign = 'center';
+    var nx = sx + sw - 74, ny = sy + 36 + fs;
+    name.forEach(function (c, i) { ctx.fillText(c, nx, ny + i * (fs + 8)); });
+    var st = f.style.replace(/，/g, '　').split('');
+    var stSize = Math.min(24, Math.floor((sh - 90) / Math.max(st.length, 1)) - 6);
+    ctx.fillStyle = '#4E5A56'; ctx.font = '400 ' + stSize + 'px ' + FONT;
+    st.forEach(function (c, i) { ctx.fillText(c, sx + 46, sy + 42 + stSize + i * (stSize + 8)); });
+
+    // 印章
+    ctx.save();
+    ctx.translate(sx - 6, sy + sh - 40);
+    ctx.rotate(-6 * Math.PI / 180);
+    ctx.fillStyle = t.color; rrect(ctx, -50, -50, 100, 100, 8); ctx.fill();
+    ctx.strokeStyle = 'rgba(251,244,236,.85)'; ctx.lineWidth = 2.5; rrect(ctx, -42, -42, 84, 84, 5); ctx.stroke();
+    ctx.fillStyle = '#FBF4EC'; ctx.font = '700 36px ' + FONT;
+    ctx.fillText(f.type[0], 0, -6); ctx.fillText(f.type[1] || '', 0, 34);
+    ctx.restore();
+
+    // 分隔
+    var by = 900;
+    ctx.strokeStyle = 'rgba(31,39,36,.16)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(120, by - 30); ctx.lineTo(960, by - 30); ctx.stroke();
+
+    // 雷达
+    var K = Engine.KEYS, n = K.length, cx = 320, cy = by + 170, R = 132;
+    function P(i, rr) { var a = -Math.PI / 2 + i * 2 * Math.PI / n; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; }
+    [0.25, 0.5, 0.75, 1].forEach(function (fr) {
+      ctx.beginPath();
+      K.forEach(function (_, i) { var p = P(i, R * fr); if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+      ctx.closePath();
+      ctx.strokeStyle = fr === 1 ? 'rgba(31,39,36,.3)' : 'rgba(31,39,36,.12)'; ctx.lineWidth = 2; ctx.stroke();
+    });
+    ctx.beginPath();
+    K.forEach(function (k, i) { var p = P(i, R * r.display[k] / 100); if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
+    ctx.closePath();
+    ctx.globalAlpha = .22; ctx.fillStyle = t.color; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = t.color; ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.stroke();
+    K.forEach(function (k, i) {
+      var p = P(i, R + 44), a = -Math.PI / 2 + i * 2 * Math.PI / n, c = Math.cos(a);
+      ctx.textAlign = c > 0.3 ? 'left' : (c < -0.3 ? 'right' : 'center');
+      var hot = r.topDims.indexOf(k) !== -1;
+      ctx.fillStyle = hot ? t.color : '#4E5A56';
+      ctx.font = (hot ? '700 ' : '400 ') + '28px ' + FONT;
+      ctx.fillText(dimName(k), p[0], p[1] + 10);
+    });
+
+    // 右栏：隐藏优势 + 标签
+    ctx.textAlign = 'left';
+    var rx = 600;
+    ctx.fillStyle = t.color; ctx.font = '700 28px ' + FONT;
+    ctx.fillText(C.sections.hidden, rx, by + 20);
+    ctx.fillStyle = '#1F2724'; ctx.font = '700 36px ' + FONT;
+    var hid = f.hidden.split('。')[0] + '。';
+    var hl = wrap(ctx, hid, 370), hy = by + 80;
+    hl.slice(0, 3).forEach(function (l) { ctx.fillText(l, rx, hy); hy += 54; });
+    var ty = Math.max(hy + 10, by + 200);
+    f.tags.forEach(function (tag, i) {
+      var col = i % 2, row = Math.floor(i / 2);
+      var x = rx + col * 186, yy = ty + row * 74;
+      ctx.fillStyle = t.soft; ctx.fillRect(x, yy, 172, 58);
+      var size = fitFont(ctx, tag, '400', 28, 16, 152);
+      ctx.fillStyle = t.color; ctx.textAlign = 'center';
+      ctx.fillText(tag, x + 86, yy + 29 + size * 0.38);
+    });
+
+    // 页脚
+    ctx.fillStyle = '#1F2724'; ctx.fillRect(60, H - 150, W - 120, 90);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#F7F6F0';
+    var foot = fmt(C.posterFoot, fmtData(r));
+    fitFont(ctx, foot, '400', 30, 20, 620);
+    ctx.fillText(foot, 110, H - 93);
+    ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(247,246,240,.7)'; ctx.font = '400 24px ' + FONT;
+    ctx.fillText(cnDate(), W - 110, H - 94);
+
+    return cv;
+  }
+
+  function openPoster() {
+    if (!lastResult) return;
+    var go = function () {
+      var url;
+      try { url = drawPoster(lastResult).toDataURL('image/png'); }
+      catch (e) { toast('海报生成失败，请直接截图分享'); return; }
+      $('posterImg').src = url;
+      $('posterDownload').href = url;
+      $('posterDownload').setAttribute('download', C.shortName + '-' + lastResult.best.fig.name + '.png');
+      openModal('posterModal');
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(go, go); else go();
+  }
+
+  /* ---------- 复制文案 ---------- */
+  function copyText() {
+    if (!lastResult) return;
+    var f = lastResult.best.fig;
+    var text = fmt(C.copy, fmtData(lastResult)) + '\n' +
+      '「' + f.slogan + '」\n' +
+      C.matchLabel + ' ' + lastResult.best.pct + '%，最强维度：' + dimName(lastResult.topDims[0]) + '、' + dimName(lastResult.topDims[1]) + '\n' +
+      C.copyAsk + ' #' + C.title;
+    var done = function () { toast('结果文案已复制'); };
+    var fallback = function () {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      if (ok) done(); else toast('复制失败，请长按结果手动复制');
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  /* ---------- 图鉴 ---------- */
+  function buildGallery(meId) {
+    $('galleryBody').innerHTML = TYPE_ORDER.map(function (tp) {
+      var items = RESULTS.filter(function (f) { return f.type === tp; }).map(function (f) {
+        var me = f.id === meId;
+        return '<div class="g-item' + (me ? ' is-me' : '') + '"><strong>' + esc(f.name) + (me ? '<span class="g-me" title="你的结果">你</span>' : '') + '<small>' + esc(f.title) + '</small></strong><p>' + esc(f.slogan) + '</p></div>';
+      }).join('');
+      return '<div class="g-group" style="--c:' + TYPES[tp].color + '"><h3>' + tp + '</h3>' + items + '</div>';
+    }).join('');
+  }
+
+  /* ---------- 弹层与提示 ---------- */
+  var lastFocus = null;
+  function openModal(id) {
+    lastFocus = document.activeElement;
+    var m = $(id);
+    m.hidden = false;
+    document.body.style.overflow = 'hidden';
+    var first = m.querySelector('[data-close]');
+    if (first) first.focus();
+  }
+  function closeModal(m) {
+    m.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2000);
+  }
+
+  /* =========================================================
+   * 事件绑定
+   * ========================================================= */
+  function bind() {
+    $('btnStart').addEventListener('click', startNew);
+    $('btnResume').addEventListener('click', resume);
+    $('btnBack').addEventListener('click', back);
+    $('qOptions').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.opt') : null;
+      if (b) pick(+b.getAttribute('data-oi'));
+    });
+    $('btnPoster').addEventListener('click', openPoster);
+    $('btnCopy').addEventListener('click', copyText);
+    $('btnGallery').addEventListener('click', function () { openModal('galleryModal'); });
+    $('btnRestart').addEventListener('click', function () { clearSaved(); startNew(); });
+
+    var modals = document.querySelectorAll('.modal');
+    Array.prototype.forEach.call(modals, function (m) {
+      m.addEventListener('click', function (e) {
+        if (e.target === m || (e.target.closest && e.target.closest('[data-close]'))) closeModal(m);
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      var open = document.querySelector('.modal:not([hidden])');
+      if (open) { if (e.key === 'Escape') closeModal(open); return; }
+      if (document.body.getAttribute('data-screen') !== 'quiz') return;
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      var num = parseInt(e.key, 10);
+      if (num >= 1 && num <= 4) {
+        var btn = $('qOptions').querySelectorAll('.opt')[num - 1];
+        if (btn) { e.preventDefault(); pick(+btn.getAttribute('data-oi')); }
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        e.preventDefault(); back();
+      }
+    });
+  }
+
+  buildProgress();
+  initHome();
+  bind();
+  document.body.setAttribute('data-screen', 'home');
+})();
+
+</script>
+</body>
+</html>

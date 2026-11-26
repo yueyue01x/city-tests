@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8E6E2">
+<meta name="description" content="五个城市人格测试：你的灵魂老家在哪座城市、哪座城市最适合你定居、你的宿命恋人来自哪个城市、你骨子里是南方还是北方人格、哪座城市和你的气质天生相合。">
+<title>城市人格测试合集</title>
+<style>
+  :root {
+    --bg: #E8E6E2; --paper: #F7F6F0; --ink: #1F2724; --ink-2: #4E5A56; --ink-3: #85918C;
+    --line: rgba(31, 39, 36, .14); --zhu: #B23A2C;
+    --serif: "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; font-family: var(--serif); color: var(--ink); background: var(--bg);
+    line-height: 1.8; -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 56px 20px 72px; }
+  header { position: relative; max-width: 560px; }
+  h1 { margin: 0; font-size: clamp(34px, 9vw, 60px); font-weight: 900; line-height: 1.15; letter-spacing: .02em; }
+  h1 span { display: block; font-size: .5em; font-weight: 500; color: var(--ink-2); letter-spacing: .12em; margin-bottom: 6px; }
+  .seal {
+    position: absolute; top: 0; right: 0; width: 58px; height: 58px; display: grid; place-items: center;
+    background: var(--zhu); color: #FBF4EC; border-radius: 4px; font-weight: 700; font-size: 18px; line-height: 1.1;
+    box-shadow: inset 0 0 0 2px var(--zhu), inset 0 0 0 3.5px rgba(251, 244, 236, .85); transform: rotate(-4deg);
+    writing-mode: vertical-rl; letter-spacing: .1em;
+  }
+  .lead { margin: 22px 0 0; padding-top: 18px; color: var(--ink-2); font-size: 17px; max-width: 26em;
+    border-top: 1px solid #A8864A; border-image: linear-gradient(90deg, #A8864A 0 64px, transparent 64px) 1; }
+  .grid { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .card {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: stretch; height: 100%;
+    padding: 18px; background: var(--paper); border: 1px solid var(--line); border-radius: 2px;
+    color: inherit; text-decoration: none; position: relative; overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--c); }
+  .card:hover { border-color: var(--c); transform: translateY(-2px); }
+  .card:focus-visible { outline: 2px solid var(--zhu); outline-offset: 3px; }
+  .slip {
+    writing-mode: vertical-rl; font-size: 24px; font-weight: 900; letter-spacing: .12em; line-height: 1.1;
+    padding: 12px 8px; border: 1.5px solid var(--ink); box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--ink);
+    background: #FFFEFA; min-height: 150px;
+  }
+  .body { display: flex; flex-direction: column; }
+  .body h2 { margin: 2px 0 6px; font-size: 18px; line-height: 1.5; }
+  .body p { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.75; }
+  .meta { margin-top: auto !important; padding-top: 12px; font-size: 13px !important; color: var(--c) !important; letter-spacing: .06em; }
+  footer { margin-top: 40px; font-size: 13px; color: var(--ink-3); }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1><span>每座城都有自己的脾气</span>城市人格测试合集</h1>
+    <div class="seal" aria-hidden="true">五城记</div>
+    <p class="lead">五个测试，每个十五道生活小问题，两分钟测完，还能生成分享海报。</p>
+  </header>
+
+  <ul class="grid">
+    <li><a class="card" style="--c:#5B4636" href="01-soul-hometown.html">
+      <span class="slip" aria-hidden="true">灵魂老家</span>
+      <span class="body"><h2>测测你的灵魂老家在哪座城市</h2>
+        <p>成都、重庆、北京、苏州、西安、厦门，还是大理？</p>
+        <p class="meta">15 道题，15 座城市</p></span></a></li>
+    <li><a class="card" style="--c:#2C6863" href="02-settle-city.html">
+      <span class="slip" aria-hidden="true">定居之城</span>
+      <span class="body"><h2>测测哪座城市最适合你定居</h2>
+        <p>上海、杭州、成都、青岛、昆明，还是威海？</p>
+        <p class="meta">15 道题，14 座城市</p></span></a></li>
+    <li><a class="card" style="--c:#9E3A57" href="03-destined-lover.html">
+      <span class="slip" aria-hidden="true">宿命恋人</span>
+      <span class="body"><h2>测测你的宿命恋人来自哪个城市</h2>
+        <p>甜宠、守护、欢喜、热烈、知己、浪漫，还是自由？</p>
+        <p class="meta">15 道题，14 座城市</p></span></a></li>
+    <li><a class="card" style="--c:#2F4A6D" href="04-south-north.html">
+      <span class="slip" aria-hidden="true">南北人格</span>
+      <span class="body"><h2>测测你骨子里是南方还是北方人格</h2>
+        <p>测出你的南北浓度，再看看你最像哪里人。</p>
+        <p class="meta">15 道题，12 种地域人格</p></span></a></li>
+    <li><a class="card" style="--c:#574A85" href="05-city-aura.html">
+      <span class="slip" aria-hidden="true">气质之城</span>
+      <span class="body"><h2>测测哪座城市和你的气质天生相合</h2>
+        <p>华贵、温婉、飒爽、清冷，还是辽阔？</p>
+        <p class="meta">15 道题，14 座城市</p></span></a></li>
+  </ul>
+
+  <footer>每个测试的作答进度都会自动保存在你的浏览器里，可以随时回来接着答。</footer>
+</main>
+</body>
+</html>
